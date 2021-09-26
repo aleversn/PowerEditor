@@ -251,17 +251,18 @@
         >
             <i class="ms-Icon ms-Icon--Code"></i>
         </fv-button>
-        <fv-button
-            class="power-editor-cmd-btn"
-            :theme="thisTheme"
-            :isBoxShadow="true"
-            :background="getBackground(false)"
-            :foreground="getForeground(false)"
-            :title="getTitle('Image')"
-            @click="insert(`<image-block></image-block>`)"
-        >
-            <i class="ms-Icon ms-Icon--Photo2"></i>
-        </fv-button>
+        <image-callout :theme="thisTheme" @insert-image="insertImg">
+            <fv-button
+                class="power-editor-cmd-btn"
+                :theme="thisTheme"
+                :isBoxShadow="true"
+                :background="getBackground(false)"
+                :foreground="getForeground(false)"
+                :title="getTitle('Image')"
+            >
+                <i class="ms-Icon ms-Icon--Photo2"></i>
+            </fv-button>
+        </image-callout>
         <fv-button
             class="power-editor-cmd-btn"
             :theme="thisTheme"
@@ -321,7 +322,12 @@
 </template>
 
 <script>
+import imageCallout from '@/components/menus/imageCallout.vue';
+
 export default {
+    components: {
+        imageCallout
+    },
     props: {
         editor: {
             default: () => {
@@ -381,7 +387,12 @@ export default {
             this.editor.chain().focus()[name](params).run();
         },
         insert (html) {
-            this.editor.commands.insertContent(html);
+            this.editor.chain().focus().insertContent(html).run();
+        },
+        insertImg (base64_list) {
+            base64_list.forEach(el => {
+                this.insert(`<image-block src="${el}"></image-block>`);
+            })
         }
     },
 };

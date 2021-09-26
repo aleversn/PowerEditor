@@ -7,21 +7,31 @@ export default Node.create({
 
     group: 'block',
 
+    draggable: true,
+
     atom: true,
 
     addAttributes() {
         return {
             src: {
-                default: ""
+                default: "",
+                type: String
             },
             width: {
-                default: 100
+                default: 100,
+                type: Number
+            },
+            caption: {
+                default: '',
+                type: String
             },
             alignCenter: {
-                default: true
+                default: true,
+                type: Boolean
             },
             theme: {
-                default: 'light'
+                default: 'light',
+                type: String
             }
         }
     },

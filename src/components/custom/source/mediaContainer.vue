@@ -3,13 +3,28 @@
     <div v-show="alignCenter" class="power-editor-media-control-resize-block" @mousedown="forward($event, -1)" @mouseup="stop" @touchstart="forward($event.targetTouches[0], -1)" @touchend="stop">
         <i></i>
     </div>
-    <slot>
-        Media Container
-    </slot>
+    <div class="power-editor-media-slot-container">
+        <slot>
+            Media Container
+        </slot>
+    </div>
     <div class="power-editor-media-control-resize-block sec" @mousedown="forward" @mouseup="stop" @touchstart="forward($event.targetTouches[0])" @touchend="stop">
         <i></i>
     </div>
+    <div draggable="true" data-drag-handle class="power-editor-media-drag-btn">
+        <i class="ms-Icon ms-Icon--GripperDotsVertical"></i>
+    </div>
     <div class="power-editor-media-control-btn-block">
+        <fv-button
+            class="power-editor-media-cmd-btn"
+            :theme="theme"
+            fontSize="12"
+            :isBoxShadow="true"
+            :title="getTitle('TextField')"
+            @click="show.captionBox = true"
+        >
+            <i class="ms-Icon ms-Icon--TextField"></i>
+        </fv-button>
         <fv-button
             class="power-editor-media-cmd-btn"
             :theme="theme"
@@ -31,7 +46,7 @@
             <i class="ms-Icon ms-Icon--AlignCenter"></i>
         </fv-button>
     </div>
-    <fv-text-box class="power-editor-media-caption-block" :placeholder="getTitle('Write a caption...')"></fv-text-box>
+    <fv-text-box v-show="thisCaption !== '' || show.captionBox" v-model="thisCaption" class="power-editor-media-caption-block" :placeholder="getTitle('Write a caption...')"></fv-text-box>
 </div>
 </template>
 
@@ -40,6 +55,9 @@ export default {
     props: {
         width: {
             default: 100
+        },
+        caption: {
+            default: ''
         },
         alignCenter: {
             default: true
@@ -50,6 +68,7 @@ export default {
     },
     data () {
         return {
+            thisCaption: this.caption,
             thisAlignCenter: this.alignCenter,
             elWidthStart: 0,
             elWidthEnd: 0,
@@ -58,7 +77,9 @@ export default {
             direction: 1,
             disX: 0,
             currentWidth: this.width,
-            timer: {}
+            show: {
+                captionBox: false
+            }
         }
     },
     watch: {
@@ -73,10 +94,17 @@ export default {
         },
         thisAlignCenter (val) {
             this.$emit("update:alignCenter", val);
+        },
+        caption (val) {
+            this.thisCaption = val;
+        },
+        thisCaption (val) {
+            this.$emit("update:caption", val);
         }
     },
     mounted () {
         this.Init();
+        this.outSideClickInit();
     },
     methods: {
         Init () {
@@ -123,6 +151,20 @@ export default {
             if(this.currentWidth > 100)
                 this.currentWidth = 100;
         },
+        outSideClickInit() {
+            window.addEventListener("click", event => {
+                let x = event.target;
+                let _self = false;
+                while (x && x.tagName && x.tagName.toLowerCase() != "body") {
+                    if (x == this.$el) {
+                        _self = true;
+                        break;
+                    }
+                    x = x.parentNode;
+                }
+                if (!_self) this.show.captionBox = false;
+            });
+        },
         getTitle(name) {
             return name;
         }
@@ -138,7 +180,6 @@ export default {
     width: 100%;
     max-width: 100%;
     height: auto;
-    transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
     
     &.dark
     {
@@ -149,10 +190,20 @@ export default {
                 background: rgba(245, 245, 245, 0.6);
             }
         }
+
+        .power-editor-media-drag-btn
+        {
+            color: rgba(36, 36, 36, 1);
+        }
     }
 
     &:hover
     {
+        .power-editor-media-drag-btn
+        {
+            opacity: 1;
+        }
+        
         .power-editor-media-control-resize-block, .power-editor-media-control-btn-block
         {
             opacity: 1;
@@ -161,9 +212,17 @@ export default {
 
     &:active
     {
-        transform: scale(1.02);
-        box-shadow: 20px 20px 20px rgba(0, 0, 0, 0.1);
-        opacity: 0.8;
+        .power-editor-media-slot-container
+        {
+            transform: scale(1.02);
+            box-shadow: 20px 20px 20px rgba(0, 0, 0, 0.1);
+            opacity: 0.8;
+        }
+    }
+
+    .power-editor-media-slot-container
+    {
+        transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
     }
 
     .power-editor-media-control-resize-block
@@ -220,6 +279,20 @@ export default {
             margin-left: 3px;
             flex-shrink: 0;
         }
+    }
+
+    .power-editor-media-drag-btn
+    {
+        position: absolute;
+        left: 5px;
+        top: 5px;
+        width: auto;
+        height: auto;
+        font-size: 18px;
+        color: whitesmoke;
+        opacity: 0;
+        transition: opacity 1s;
+        cursor: grab;
     }
 
     .power-editor-media-caption-block
