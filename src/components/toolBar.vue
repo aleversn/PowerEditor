@@ -391,7 +391,7 @@ export default {
         },
         insertImg (base64_list) {
             base64_list.forEach(el => {
-                this.insert(`<image-block src="${el}"></image-block>`);
+                this.insert(`<image-block src="${el}"></image-block>\n`);
             })
         }
     },
