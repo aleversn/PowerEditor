@@ -1,5 +1,6 @@
 <template>
     <node-view-wrapper
+        v-if="node"
         class="power-editor-image-container"
         :style="{ 'justify-content': node.attrs.alignCenter ? 'center' : 'flex-start' }"
     >
