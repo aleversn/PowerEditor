@@ -239,6 +239,7 @@ export default {
         opacity: 0;
         cursor: e-resize;
         transition: opacity 1s;
+        z-index: 2;
 
         &.sec
         {

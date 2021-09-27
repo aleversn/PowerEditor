@@ -17,10 +17,10 @@
                 class="power-editor-l-c-block"
                 :class="[{ dark: theme === 'dark' }]"
             >
-                <p class="power-editor-l-c-title">Choose Caption Color</p>
-                <div class="power-editor-l-c-color-block">
-                    <fv-colorPicker v-if="show" style="width: calc(100% - 25px); height: 100%;"></fv-colorPicker>
-                </div>
+                <p
+                    v-if="false"
+                    class="power-editor-l-c-title"
+                >Fill the Form</p>
                 <fv-text-box
                     v-model="caption"
                     placeholder="Caption"
@@ -56,26 +56,34 @@ export default {
         return {
             link: "",
             caption: "",
-            color: "rgba(0, 153, 204, 1)",
             show: false,
         };
     },
     watch: {
         show(val) {
             if (!val) {
-                this.link = '';
-                this.caption = '';
-            }
+                this.link = "";
+                this.caption = "";
+            } else this.getSelection();
         },
     },
     methods: {
         insert() {
-            if(this.link === '')
-                return 0;
+            if (this.link === "") return 0;
             this.caption = this.caption == "" ? this.link : this.caption;
-            this.$emit("insert-link", `<a href="${this.link}" style="color: ${this.color}; text-decoration: none; cursor: pointer;">${this.caption}</a>`);
+            this.$emit(
+                "insert-link",
+                `<a href="${this.link}">${this.caption}</a>`
+            );
             this.show = false;
-        }
+        },
+        getSelection() {
+            try {
+                this.caption = window.getSelection().toString();
+            } catch (e) {
+                console.log(e);
+            }
+        },
     },
 };
 </script>
@@ -112,17 +120,6 @@ export default {
                 color: rgba(36, 36, 36, 0.8);
                 text-align: left;
                 text-indent: 15px;
-            }
-
-            .power-editor-l-c-color-block
-            {
-                position: relative;
-                width: 100%;
-                height: 200px; 
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                overflow: hidden;
             }
         }
 

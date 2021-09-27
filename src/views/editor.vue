@@ -18,6 +18,9 @@ import { Editor, EditorContent } from "@tiptap/vue-2";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
+import TextStyle from "@tiptap/extension-text-style";
+import { Color } from "@tiptap/extension-color";
+import Link from "@tiptap/extension-link";
 
 import ImageBlock from "@/components/custom/extension/imageBlock.js";
 
@@ -35,6 +38,7 @@ export default {
     },
 
     mounted() {
+        let el = this;
         this.editor = new Editor({
             content: `<p>I’m running tiptap with Vue.js. 🎉</p>`,
             extensions: [
@@ -43,11 +47,87 @@ export default {
                 TextAlign.configure({
                     types: ["heading", "paragraph"],
                 }),
-                ImageBlock
+                TextStyle,
+                Color,
+                Link,
+                ImageBlock,
             ],
+            editorProps: {  //ProseMirror Editor Props//
+                handlePaste(view, e, slice) {
+                    let placeholder = {
+                        view,
+                        e,
+                        slice,
+                    };
+                    let event = placeholder.e;
+                    event.stopPropagation();
+                    event.preventDefault();
+                    el.customPaste(event);
+                    return true;
+                },
+            },
         });
     },
+    methods: {
+        insert(html) {
+            this.editor.commands.insertContent(html);
+        },
+        insertImg(base64_list) {
+            base64_list.forEach((el) => {
+                this.insert(`<image-block src="${el}"></image-block>\n`);
+            });
+        },
+        async customPaste(event) {    //rewrite paste event//
+            let img_promises = [];
+            let exists_html = false;
 
+            let data = event.clipboardData || window.clipboardData;
+            let items = data.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf("html") > -1) exists_html = items[i];
+                if (
+                    items[i].kind === "file" &&
+                    items[i].type.indexOf("image") > -1
+                ) {
+                    let pasteFile = items[i].getAsFile();
+                    let reader = new FileReader();
+                    reader.readAsDataURL(pasteFile);
+                    let base64 = new Promise((resolve) => {
+                        reader.onload = (event) => {
+                            resolve(event.target.result);
+                        };
+                    });
+                    img_promises.push(base64);
+                }
+            }
+
+            if (exists_html !== false) {
+                let txt = await new Promise((resolve) => {
+                    exists_html.getAsString((str) => {
+                        resolve(str);
+                    });
+                });
+                let parser = new DOMParser();
+                let htmlDoc = parser.parseFromString(txt, "text/html");
+                let img_nodes = htmlDoc.querySelectorAll("img");
+                for (let i = 0; i < img_nodes.length; i++) {
+                    let node = htmlDoc.createElement("image-block");
+                    let src = img_nodes[i].getAttribute("src");
+                    node.setAttribute("src", src);
+                    let x = img_nodes[i];
+                    while (x && x.parentNode != htmlDoc.body) {
+                        x = x.parentNode;
+                    }
+                    x.parentNode.insertBefore(node, x);
+                }
+                this.insert(htmlDoc.body.innerHTML);
+            }
+            else
+                Promise.all(img_promises).then(data => {
+                    this.insertImg(data);
+                });
+        }
+    },
     beforeDestroy() {
         this.editor.destroy();
     },
@@ -91,6 +171,11 @@ export default {
                 margin-top: 0.75em;
             }
 
+            &:focus
+            {
+                outline: none;
+            }
+
             ul,
             ol {
                 padding: 0 1rem;
@@ -103,6 +188,12 @@ export default {
             h5,
             h6 {
                 line-height: 1.1;
+            }
+
+            a {
+                color: rgba(0, 153, 204, 1);
+                text-decoration: none;
+                cursor: pointer;
             }
 
             code {
@@ -132,7 +223,7 @@ export default {
 
             blockquote {
                 padding-left: 1rem;
-                border-left: 2px solid rgba(#0d0d0d, 0.1);
+                border-left: 2px solid rgba(13, 13, 13, 1);
             }
 
             hr {

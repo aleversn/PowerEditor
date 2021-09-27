@@ -384,22 +384,26 @@ export default {
             return "";
         },
         exec(cmd) {
+            console.log(this.editor.view.state.selection.from, this.editor.view.state.selection.to)
             if (cmd) this.editor.chain().focus()[cmd]().run();
+            this.$nextTick(() => {
+                console.log(this.editor.view.state.selection.from, this.editor.view.state.selection.to)
+            })
         },
         execMore(name, params) {
             this.editor.chain().focus()[name](params).run();
         },
         insert(html) {
-            this.editor.chain().focus().insertContent(html).run();
+            this.editor.commands.insertContent(html);
         },
         insertImg(base64_list) {
             base64_list.forEach((el) => {
                 this.insert(`<image-block src="${el}"></image-block>\n`);
             });
         },
-        insertLink(link) {
-            this.insert(link);
-        },
+        insertLink (link) {
+            this.editor.chain().focus().insertContent(link).run();
+        }
     },
 };
 </script>
