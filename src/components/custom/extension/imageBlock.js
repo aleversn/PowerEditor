@@ -14,24 +14,19 @@ export default Node.create({
     addAttributes() {
         return {
             src: {
-                default: "",
-                type: String
+                default: ""
             },
             width: {
-                default: 100,
-                type: Number
+                default: 100
             },
             caption: {
-                default: '',
-                type: String
+                default: ''
             },
             alignCenter: {
-                default: true,
-                type: Boolean
+                default: true
             },
             theme: {
-                default: 'light',
-                type: String
+                default: 'light'
             }
         }
     },

@@ -13,10 +13,18 @@
             <p style="font-size: 13.8px;">Insert Image</p>
         </header>
         <main>
-            <div class="power-editor-i-c-block">
+            <div
+                class="power-editor-i-c-block"
+                :class="[{ dark: theme === 'dark' }]"
+            >
                 <p class="power-editor-i-c-title">Method 1</p>
-                <i class="ms-Icon ms-Icon--Photo2Add power-editor-i-c-icon-1" @click="$refs.img_local.click()"></i>
-                <p style="margin-top: 15px; font-size: 12px; color: rgba(95, 95, 95, 0.8);">Choose Local Image as Base64 (multiple).</p>
+                <i
+                    class="ms-Icon ms-Icon--Photo2Add power-editor-i-c-icon-1"
+                    @click="$refs.img_local.click()"
+                ></i>
+                <p
+                    class="power-editor-i-c-t2"
+                >Choose Local Image as Base64 (multiple).</p>
                 <input
                     type="file"
                     accept="image/gif,image/png,image/jpeg,image/x-png"
@@ -26,7 +34,10 @@
                     @change="insertLocal"
                 />
             </div>
-            <div class="power-editor-i-c-block">
+            <div
+                class="power-editor-i-c-block"
+                :class="[{ dark: theme === 'dark' }]"
+            >
                 <p class="power-editor-i-c-title">Method 2</p>
                 <fv-text-box
                     v-model="url"
@@ -38,7 +49,7 @@
             <div class="power-editor-i-c-control-block">
                 <fv-button
                     theme="dark"
-                    background="rgba(222, 109, 149, 1.00)"
+                    background="rgba(65, 74, 90, 1)"
                     @click="insert"
                 >Insert</fv-button>
             </div>
@@ -51,46 +62,47 @@ export default {
     props: {
         theme: {
             default: "light",
-        }
+        },
     },
-    data () {
+    data() {
         return {
-            url: '',
-            show: false
-        }
+            url: "",
+            show: false,
+        };
     },
     watch: {
-        show (val) {
-            if(!val) {
+        show(val) {
+            if (!val) {
                 this.url = [];
-                this.$refs.img_local.value = '';
+                this.$refs.img_local.value = "";
             }
-        }
+        },
     },
     methods: {
-        insert () {
+        insert() {
+            if(this.url === '')
+                return 0;
             this.$emit("insert-image", [this.url]);
             this.show = false;
         },
-        async insertLocal () {
+        async insertLocal() {
             let files = this.$refs.img_local.files;
-            if(files.length < 1)
-                return 0;
+            if (files.length < 1) return 0;
             let base64_list = [];
-            for(let file of files) {
+            for (let file of files) {
                 let reader = new FileReader();
                 reader.readAsDataURL(file);
-                let base64 = await new Promise(resolve => {
-                    reader.onload = event => {
+                let base64 = await new Promise((resolve) => {
+                    reader.onload = (event) => {
                         resolve(event.target.result);
-                    }
+                    };
                 });
                 base64_list.push(base64);
             }
             this.$emit("insert-image", base64_list);
             this.show = false;
-        }
-    }
+        },
+    },
 };
 </script>
 
@@ -113,6 +125,12 @@ export default {
             flex-direction: column;
             justify-content: center;
             align-items: center;
+
+            &.dark {
+                .power-editor-i-c-t2 {
+                    color: whitesmoke;
+                }
+            }
 
             .power-editor-i-c-title {
                 position: relative;
@@ -138,6 +156,12 @@ export default {
                 align-items: center;
                 outline: none;
                 cursor: pointer;
+            }
+
+            .power-editor-i-c-t2 {
+                margin-top: 15px;
+                font-size: 12px;
+                color: rgba(95, 95, 95, 0.8);
             }
         }
 

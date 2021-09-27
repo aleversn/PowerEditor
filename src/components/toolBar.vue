@@ -1,5 +1,8 @@
 <template>
-    <div class="power-editor-tool-bar-container">
+    <div
+        class="power-editor-tool-bar-container"
+        :class="[{ dark: thisTheme === 'dark' }]"
+    >
         <fv-button
             class="power-editor-cmd-btn"
             :theme="thisTheme"
@@ -67,13 +70,12 @@
         >
             <i class="ms-Icon ms-Icon--ChromeMinimize"></i>
         </fv-button>
-        <fv-callout
-            :lockScroll="true"
-            :position="'bottomCenter'"
-            :beak="12"
-            :space="0"
+        <heading-callout
             :theme="thisTheme"
-            :popperClass="'power-editor-header-callout'"
+            :editor="editor"
+            :getBackground="getBackground"
+            :getForeground="getForeground"
+            :execMore="execMore"
         >
             <fv-button
                 class="power-editor-cmd-btn"
@@ -85,23 +87,7 @@
             >
                 <i class="ms-Icon ms-Icon--Header1"></i>
             </fv-button>
-            <header>
-                <p style="font-size: 13.8px;">Headers</p>
-            </header>
-            <main>
-                <fv-button
-                    v-for="i in 6"
-                    :key="i"
-                    class="power-editor-cmd-btn"
-                    :theme="thisTheme"
-                    :isBoxShadow="true"
-                    :background="getBackground(editor.isActive('heading', { level: i }))"
-                    :foreground="getForeground(editor.isActive('heading', { level: i }))"
-                    :title="getTitle('Horizontal Rule')"
-                    @click="execMore('toggleHeading', { level: i })"
-                >H{{i}}</fv-button>
-            </main>
-        </fv-callout>
+        </heading-callout>
         <fv-button
             class="power-editor-cmd-btn"
             :theme="thisTheme"
@@ -251,7 +237,10 @@
         >
             <i class="ms-Icon ms-Icon--Code"></i>
         </fv-button>
-        <image-callout :theme="thisTheme" @insert-image="insertImg">
+        <image-callout
+            :theme="thisTheme"
+            @insert-image="insertImg"
+        >
             <fv-button
                 class="power-editor-cmd-btn"
                 :theme="thisTheme"
@@ -263,17 +252,21 @@
                 <i class="ms-Icon ms-Icon--Photo2"></i>
             </fv-button>
         </image-callout>
-        <fv-button
-            class="power-editor-cmd-btn"
+        <link-callout
             :theme="thisTheme"
-            :isBoxShadow="true"
-            :background="getBackground(false)"
-            :foreground="getForeground(false)"
-            :title="getTitle('Link')"
-            @click="exec('')"
+            @insert-link="insertLink"
         >
-            <i class="ms-Icon ms-Icon--Link"></i>
-        </fv-button>
+            <fv-button
+                class="power-editor-cmd-btn"
+                :theme="thisTheme"
+                :isBoxShadow="true"
+                :background="getBackground(false)"
+                :foreground="getForeground(false)"
+                :title="getTitle('Link')"
+            >
+                <i class="ms-Icon ms-Icon--Link"></i>
+            </fv-button>
+        </link-callout>
         <fv-button
             class="power-editor-cmd-btn"
             :theme="thisTheme"
@@ -322,11 +315,15 @@
 </template>
 
 <script>
-import imageCallout from '@/components/menus/imageCallout.vue';
+import linkCallout from "@/components/menus/linkCallout.vue";
+import imageCallout from "@/components/menus/imageCallout.vue";
+import headingCallout from "@/components/menus/headingCallout.vue";
 
 export default {
     components: {
-        imageCallout
+        linkCallout,
+        imageCallout,
+        headingCallout,
     },
     props: {
         editor: {
@@ -340,7 +337,7 @@ export default {
     },
     data() {
         return {
-            thisTheme: "light",
+            thisTheme: this.theme,
         };
     },
     watch: {
@@ -371,7 +368,13 @@ export default {
         getTitle(name) {
             return name;
         },
-        getForeground(state, color = "rgba(65, 74, 90, 1)") {
+        getForeground(
+            state,
+            color = {
+                light: "rgba(65, 74, 90, 1)",
+                dark: "rgba(245, 245, 245, 1)",
+            }
+        ) {
             if (state) return this.highlightColor.f;
             if (typeof color === "string") return color;
             return color[this.thisTheme];
@@ -386,14 +389,17 @@ export default {
         execMore(name, params) {
             this.editor.chain().focus()[name](params).run();
         },
-        insert (html) {
+        insert(html) {
             this.editor.chain().focus().insertContent(html).run();
         },
-        insertImg (base64_list) {
-            base64_list.forEach(el => {
+        insertImg(base64_list) {
+            base64_list.forEach((el) => {
                 this.insert(`<image-block src="${el}"></image-block>\n`);
-            })
-        }
+            });
+        },
+        insertLink(link) {
+            this.insert(link);
+        },
     },
 };
 </script>
@@ -419,6 +425,10 @@ export default {
     z-index: 2;
     overflow-x: auto;
 
+    &.dark {
+        background: rgba(0, 0, 0, 0.8);
+    }
+
     .power-editor-cmd-btn {
         width: 45px;
         height: 45px;
@@ -426,8 +436,7 @@ export default {
         flex-shrink: 0;
     }
 
-    hr
-    {
+    hr {
         width: 1.5px;
         margin-left: 5px;
         height: 30px;
@@ -435,28 +444,6 @@ export default {
         background: rgba(230, 230, 230, 1);
         border: none;
         border-radius: 2px;
-    }
-
-    
-}
-
-.power-editor-header-callout
-{
-    div.main
-    {
-        height: auto;
-        padding: 5px 0px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow: auto;
-
-        .power-editor-cmd-btn {
-            width: 45px;
-            height: 45px;
-            margin-top: 5px;
-            flex-shrink: 0;
-        }
     }
 }
 </style>
