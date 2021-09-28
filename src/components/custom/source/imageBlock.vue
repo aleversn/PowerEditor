@@ -10,10 +10,10 @@
             :alignCenter.sync="node.attrs.alignCenter"
             :theme="node.attrs.theme"
         >
-            <fv-img
+            <fv-image
                 :src="node.attrs.src"
                 style="width: 100%; height: auto;"
-            ></fv-img>
+            ></fv-image>
         </media-container>
     </node-view-wrapper>
 </template>
