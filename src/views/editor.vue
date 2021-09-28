@@ -30,6 +30,8 @@ import Link from "@tiptap/extension-link";
 import ImageBlock from "@/components/custom/extension/imageBlock.js";
 import PowerTaskList from "@/components/custom/extension/taskList.js";
 import PowerTaskItem from "@/components/custom/extension/taskItem.js";
+import InlineEquation from "@/components/custom/extension/inlineEquation.js";
+import EquationBlock from "@/components/custom/extension/equationBlock.js";
 
 import toolBar from "@/components/toolBar.vue";
 
@@ -73,6 +75,8 @@ export default {
                 ImageBlock,
                 PowerTaskList,
                 PowerTaskItem,
+                InlineEquation,
+                EquationBlock
             ],
             editorProps: {
                 //ProseMirror Editor Props//

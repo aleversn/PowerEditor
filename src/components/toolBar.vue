@@ -256,6 +256,17 @@
         >
             <i class="ms-Icon ms-Icon--Code"></i>
         </fv-button>
+        <fv-button
+            class="power-editor-cmd-btn"
+            :theme="thisTheme"
+            :isBoxShadow="true"
+            :background="getBackground(editor.isActive('codeBlock'))"
+            :foreground="getForeground(editor.isActive('codeBlock'))"
+            :title="getTitle('Code')"
+            @click="insertEquationBlock"
+        >
+            <i class="ms-Icon ms-Icon--Variable"></i>
+        </fv-button>
         <image-callout
             :theme="thisTheme"
             @insert-image="insertImg"
@@ -421,6 +432,12 @@ export default {
         insertLink(link) {
             this.editor.chain().focus().insertContent(link).run();
         },
+        insertInlineEquation () {
+            this.editor.chain().focus().insertContent(`<inline-equation></inline-equation>`).run();
+        },
+        insertEquationBlock () {
+            this.editor.chain().focus().insertContent(`<equation-block></equation-block>`).run();
+        }
     },
 };
 </script>
