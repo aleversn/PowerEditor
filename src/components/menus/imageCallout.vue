@@ -49,6 +49,7 @@
             <div class="power-editor-i-c-control-block">
                 <fv-button
                     theme="dark"
+                    :disabled="url === ''"
                     background="rgba(65, 74, 90, 1)"
                     @click="insert"
                 >Insert</fv-button>
@@ -73,7 +74,7 @@ export default {
     watch: {
         show(val) {
             if (!val) {
-                this.url = [];
+                this.url = "";
                 this.$refs.img_local.value = "";
             }
         },

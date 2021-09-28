@@ -37,6 +37,7 @@
             <div class="power-editor-l-c-control-block">
                 <fv-button
                     theme="dark"
+                    :disabled="link === ''"
                     background="rgba(65, 74, 90, 1)"
                     @click="insert"
                 >Insert</fv-button>

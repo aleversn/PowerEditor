@@ -145,8 +145,8 @@ export default {
         },
         stop () {
             this.moveable = false;
-            if(this.elWidthEnd < 20)
-                this.elWidthEnd = 20;
+            if(this.elWidthEnd < 50)
+                this.elWidthEnd = 50;
             this.currentWidth = this.elWidthEnd * this.ppi;
             if(this.currentWidth > 100)
                 this.currentWidth = 100;
@@ -176,7 +176,7 @@ export default {
 .power-editor-media-container
 {
     position: relative;
-    min-width: 20px;
+    min-width: 50px;
     width: 100%;
     max-width: 100%;
     height: auto;

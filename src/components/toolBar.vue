@@ -92,9 +92,20 @@
             class="power-editor-cmd-btn"
             :theme="thisTheme"
             :isBoxShadow="true"
+            :background="getBackground(editor.isActive('powerTaskList'))"
+            :foreground="getForeground(editor.isActive('powerTaskList'))"
+            :title="getTitle('TaskLogo')"
+            @click="exec('togglePowerTaskList')"
+        >
+            <i class="ms-Icon ms-Icon--TaskLogo"></i>
+        </fv-button>
+        <fv-button
+            class="power-editor-cmd-btn"
+            :theme="thisTheme"
+            :isBoxShadow="true"
             :background="getBackground(false)"
             :foreground="getForeground(false)"
-            :title="getTitle('Clear Formatting')"
+            :title="getTitle('ClearFormatting')"
             @click="exec('clearNodes')"
         >
             <i class="ms-Icon ms-Icon--ClearFormatting"></i>
@@ -384,11 +395,7 @@ export default {
             return "";
         },
         exec(cmd) {
-            console.log(this.editor.view.state.selection.from, this.editor.view.state.selection.to)
             if (cmd) this.editor.chain().focus()[cmd]().run();
-            this.$nextTick(() => {
-                console.log(this.editor.view.state.selection.from, this.editor.view.state.selection.to)
-            })
         },
         execMore(name, params) {
             this.editor.chain().focus()[name](params).run();

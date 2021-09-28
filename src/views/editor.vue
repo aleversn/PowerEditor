@@ -4,10 +4,14 @@
             v-if="editor"
             :editor="editor"
         ></tool-bar>
-        <div class="tip-tap-editor-container">
+        <div
+            class="tip-tap-editor-container"
+            :style="{ background: editorOutSideBackground }"
+        >
             <editor-content
                 class="tip-tap-editor"
                 :editor="editor"
+                :style="{ 'max-width': contentMaxWidth }"
             />
         </div>
     </div>
@@ -23,6 +27,8 @@ import { Color } from "@tiptap/extension-color";
 import Link from "@tiptap/extension-link";
 
 import ImageBlock from "@/components/custom/extension/imageBlock.js";
+import PowerTaskList from "@/components/custom/extension/taskList.js";
+import PowerTaskItem from "@/components/custom/extension/taskItem.js";
 
 import toolBar from "@/components/toolBar.vue";
 
@@ -30,6 +36,18 @@ export default {
     components: {
         EditorContent,
         toolBar,
+    },
+    props: {
+        contentMaxWidth: {
+            default: "900px",
+            type: String,
+        },
+        editorOutSideBackground: {
+            default: "",
+        },
+        theme: {
+            default: "light",
+        },
     },
     data() {
         return {
@@ -51,8 +69,11 @@ export default {
                 Color,
                 Link,
                 ImageBlock,
+                PowerTaskList,
+                PowerTaskItem,
             ],
-            editorProps: {  //ProseMirror Editor Props//
+            editorProps: {
+                //ProseMirror Editor Props//
                 handlePaste(view, e, slice) {
                     let placeholder = {
                         view,
@@ -77,7 +98,8 @@ export default {
                 this.insert(`<image-block src="${el}"></image-block>\n`);
             });
         },
-        async customPaste(event) {    //rewrite paste event//
+        async customPaste(event) {
+            //rewrite paste event//
             let img_promises = [];
             let exists_html = false;
 
@@ -121,12 +143,11 @@ export default {
                     x.parentNode.insertBefore(node, x);
                 }
                 this.insert(htmlDoc.body.innerHTML);
-            }
-            else
-                Promise.all(img_promises).then(data => {
+            } else
+                Promise.all(img_promises).then((data) => {
                     this.insertImg(data);
                 });
-        }
+        },
     },
     beforeDestroy() {
         this.editor.destroy();
@@ -159,8 +180,10 @@ export default {
         .tip-tap-editor {
             position: relative;
             width: 100%;
+            margin: 0px auto;
             margin-top: 15px;
             min-height: 95%;
+            height: auto;
             padding: 15px;
             background: white;
             box-sizing: border-box;
@@ -171,8 +194,7 @@ export default {
                 margin-top: 0.75em;
             }
 
-            &:focus
-            {
+            &:focus {
                 outline: none;
             }
 
