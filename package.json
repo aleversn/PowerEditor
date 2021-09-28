@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@tiptap/extension-color": "^2.0.0-beta.3",
+    "@tiptap/extension-highlight": "^2.0.0-beta.18",
     "@tiptap/extension-link": "^2.0.0-beta.20",
     "@tiptap/extension-task-item": "^2.0.0-beta.18",
     "@tiptap/extension-task-list": "^2.0.0-beta.17",
@@ -18,6 +19,7 @@
     "@tiptap/starter-kit": "^2.0.0-beta.111",
     "@tiptap/vue-2": "^2.0.0-beta.53",
     "core-js": "^3.6.5",
+    "katex": "^0.13.18",
     "vfluentdesign": "^0.1.38",
     "vue": "^2.6.11"
   },

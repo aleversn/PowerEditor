@@ -23,6 +23,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import TextStyle from "@tiptap/extension-text-style";
+import Highlight from '@tiptap/extension-highlight';
 import { Color } from "@tiptap/extension-color";
 import Link from "@tiptap/extension-link";
 
@@ -66,6 +67,7 @@ export default {
                     types: ["heading", "paragraph"],
                 }),
                 TextStyle,
+                Highlight.configure({ multicolor: true }),
                 Color,
                 Link,
                 ImageBlock,

@@ -204,27 +204,35 @@
             <i class="ms-Icon ms-Icon--DecreaseIndentLegacy"></i>
         </fv-button>
         <hr>
-        <fv-button
-            class="power-editor-cmd-btn"
+        <color-callout
             :theme="thisTheme"
-            :isBoxShadow="true"
-            :background="getBackground(false)"
-            :foreground="getForeground(false, 'rgba(239, 107, 87, 1)')"
-            :title="getTitle('Foreground')"
-            @click="exec('')"
+            :editor="editor"
+            :getBackground="getBackground"
+            :getForeground="getForeground"
+            :exec="exec"
+            :execMore="execMore"
         >
-            <i class="ms-Icon ms-Icon--Eyedropper"></i>
-        </fv-button>
+            <fv-button
+                class="power-editor-cmd-btn"
+                :theme="thisTheme"
+                :isBoxShadow="true"
+                :background="getBackground(false)"
+                :foreground="getForeground(false, 'rgba(239, 107, 87, 1)')"
+                :title="getTitle('Foreground')"
+            >
+                <i class="ms-Icon ms-Icon--Eyedropper"></i>
+            </fv-button>
+        </color-callout>
         <fv-button
             class="power-editor-cmd-btn"
             :theme="thisTheme"
             :isBoxShadow="true"
             :background="getBackground(false)"
             :foreground="getForeground(false, 'rgba(222, 81, 140, 1)')"
-            :title="getTitle('Background')"
+            :title="getTitle('Draw')"
             @click="exec('')"
         >
-            <i class="ms-Icon ms-Icon--BucketColor"></i>
+            <i class="ms-Icon ms-Icon--PenWorkspace"></i>
         </fv-button>
         <fv-button
             class="power-editor-cmd-btn"
@@ -327,12 +335,14 @@
 
 <script>
 import linkCallout from "@/components/menus/linkCallout.vue";
+import colorCallout from "@/components/menus/colorCallout.vue";
 import imageCallout from "@/components/menus/imageCallout.vue";
 import headingCallout from "@/components/menus/headingCallout.vue";
 
 export default {
     components: {
         linkCallout,
+        colorCallout,
         imageCallout,
         headingCallout,
     },
@@ -408,9 +418,9 @@ export default {
                 this.insert(`<image-block src="${el}"></image-block>\n`);
             });
         },
-        insertLink (link) {
+        insertLink(link) {
             this.editor.chain().focus().insertContent(link).run();
-        }
+        },
     },
 };
 </script>
