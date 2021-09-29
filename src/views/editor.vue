@@ -23,9 +23,12 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import TextStyle from "@tiptap/extension-text-style";
-import Highlight from '@tiptap/extension-highlight';
+import Highlight from "@tiptap/extension-highlight";
 import { Color } from "@tiptap/extension-color";
 import Link from "@tiptap/extension-link";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+
+import lowlight from "lowlight";
 
 import ImageBlock from "@/components/custom/extension/imageBlock.js";
 import PowerTaskList from "@/components/custom/extension/taskList.js";
@@ -72,11 +75,14 @@ export default {
                 Highlight.configure({ multicolor: true }),
                 Color,
                 Link,
+                CodeBlockLowlight.configure({
+                    lowlight,
+                }),
                 ImageBlock,
                 PowerTaskList,
                 PowerTaskItem,
                 InlineEquation,
-                EquationBlock
+                EquationBlock,
             ],
             editorProps: {
                 //ProseMirror Editor Props//
@@ -108,11 +114,13 @@ export default {
             //rewrite paste event//
             let img_promises = [];
             let exists_html = false;
+            let exists_text = false;
 
             let data = event.clipboardData || window.clipboardData;
             let items = data.items;
             for (let i = 0; i < items.length; i++) {
                 if (items[i].type.indexOf("html") > -1) exists_html = items[i];
+                if (items[i].type.indexOf("plain") > -1) exists_text = items[i];
                 if (
                     items[i].kind === "file" &&
                     items[i].type.indexOf("image") > -1
@@ -149,6 +157,17 @@ export default {
                     x.parentNode.insertBefore(node, x);
                 }
                 this.insert(htmlDoc.body.innerHTML);
+            } else if (exists_text !== false) {
+                exists_text.getAsString((str) => {
+                    str = str.replace(/&/g, "&amp;");
+                    str = str.replace(/</g, "&lt;");
+                    str = str.replace(/>/g, "&gt;");
+                    str = str.replace(/"/g, "&quto;");
+                    str = str.replace(/'/g, "&#39;");
+                    str = str.replace(/`/g, "&#96;");
+                    str = str.replace(/\//g, "&#x2F;");
+                    this.insert(encodeURI(str));
+                });
             } else
                 Promise.all(img_promises).then((data) => {
                     this.insertImg(data);
@@ -241,6 +260,58 @@ export default {
                     padding: 0;
                     background: none;
                     font-size: 0.8rem;
+                }
+
+                .hljs-comment,
+                .hljs-quote {
+                    color: #616161;
+                }
+
+                .hljs-variable,
+                .hljs-template-variable,
+                .hljs-attribute,
+                .hljs-tag,
+                .hljs-name,
+                .hljs-regexp,
+                .hljs-link,
+                .hljs-name,
+                .hljs-selector-id,
+                .hljs-selector-class {
+                    color: #f98181;
+                }
+
+                .hljs-number,
+                .hljs-meta,
+                .hljs-built_in,
+                .hljs-builtin-name,
+                .hljs-literal,
+                .hljs-type,
+                .hljs-params {
+                    color: #fbbc88;
+                }
+
+                .hljs-string,
+                .hljs-symbol,
+                .hljs-bullet {
+                    color: #b9f18d;
+                }
+
+                .hljs-title,
+                .hljs-section {
+                    color: #faf594;
+                }
+
+                .hljs-keyword,
+                .hljs-selector-tag {
+                    color: #70cff8;
+                }
+
+                .hljs-emphasis {
+                    font-style: italic;
+                }
+
+                .hljs-strong {
+                    font-weight: 700;
                 }
             }
 
